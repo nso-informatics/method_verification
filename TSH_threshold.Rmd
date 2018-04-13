@@ -1,0 +1,22 @@
+# Screening Thresholds #
+ 
+* The regression parameters (table \ref{tab:para}) were used to
+  determine the effect of the GSP method  on the screening threshold.
+
+```{r}
+intercept <- trim.deming@para[1,1] # intercept
+slope <- trim.deming@para[2,1] # slope
+
+reg <- function(m,x,b){
+      y <- m * x + b
+      return(round(y, digits = 3))
+}
+```
+
+* A `r params$analyte` result of `r reg(slope, info$threshold,
+  intercept)` `r info$units` on the GSP platform is equivalent to a
+  value at the screening threshold (`r info$threshold` `r info$units`)
+  with the AutoDelfia.
+
+\FloatBarrier
+

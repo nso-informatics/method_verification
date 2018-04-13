@@ -1,0 +1,93 @@
+# Screening Thresholds #
+```{r}
+reg <- function(m,x,b){
+      y <- m * x + b
+      return(round(y, digits = 3))
+}
+
+cutoff <- 49.9 ## cutoff
+failsafe <- 117.5 ## threshold
+```
+* IRT screening employs two rolling percentile thresholds
+    * 96%tile from a 4 week period ~ 49.9 ng/ml
+    * 99%tile from a 12 week period ~ 117.5 ng/ml
+* Comparison data from for value near the screening thresholds was used to calculate regression equations
+
+## 96th percentile ##
+* The comparison data set was filtered to remove values less than 30 ng/ml and greater than 70.
+
+```{r, fig.cap="\\label{fig:dem}Filtered Deming regression"}
+co <- comp %>%
+     filter(AD >= 30 & AD <= 70)  ## data close to the 96%tile
+
+co.deming <- mcreg(x = co$AD, y =co$GSP, error.ratio = 1, alpha = 0.05,
+                     mref.name = "AD", mtest.name = "GSP", sample.names = NULL,
+                     method.reg = "Deming", method.ci = "bootstrap",
+                     method.bootstrap.ci = "BCa",
+                     nsamples = 999, rng.seed = NULL, rng.kind = "Mersenne-Twister", iter.max = 30,
+                     threshold = 1e-06, na.rm = TRUE, NBins = 1e+06)
+
+plot(co.deming, x.lab = "Old", y.lab = "New", main=paste(params$analyte, "Filtered Method Comparision"))
+```
+
+```{r}    
+pander::pander(co.deming@para, caption = "\\label{tab:co}Regression Parameters")
+```
+
+```{r,fig.cap="\\label{fig:diff}Difference Plot"}
+plotDifference(co.deming, main= paste(params$analyte, "Method Comparision"))
+```
+
+```{r}
+cointercept <- co.deming@para[1,1] # intercept
+coslope <- co.deming@para[2,1] # slope
+``` 
+  
+* The regression parameters (table \ref{tab:co}) were used to
+  determine the effect of the GSP method  on the 96%tile  screening threshold.
+
+* A `r params$analyte` result of `r reg(coslope, cutoff, cointercept)`
+  `r info$units` on the GSP platform is equivalent to a value at the
+  screening threshold (`r cutoff` `r info$units`) with the AutoDelfia.
+  
+## 99th percentile ##
+
+* The comparison data set was filtered to remove values less than 60 ng/ml and greater than `r info$upper`.
+
+```{r, fig.cap="\\label{fig:dem}Filtered Deming regression"}
+fs <- comp %>%
+     filter(AD >= 50 & AD <= info$upper) 
+
+fs.deming <- mcreg(x = fs$AD, y =fs$GSP, error.ratio = 1, alpha = 0.05,
+                     mref.name = "AD", mtest.name = "GSP", sample.names = NULL,
+                     method.reg = "Deming", method.ci = "bootstrap",
+                     method.bootstrap.ci = "BCa",
+                     nsamples = 999, rng.seed = NULL, rng.kind = "Mersenne-Twister", iter.max = 30,
+                     threshold = 1e-06, na.rm = TRUE, NBins = 1e+06)
+
+plot(fs.deming, x.lab = "Old", y.lab = "New", main=paste(params$analyte, "Filtered Method Comparision"))
+```
+
+```{r}    
+pander::pander(fs.deming@para, caption = "\\label{tab:fs}Regression Parameters")
+```
+
+```{r,fig.cap="\\label{fig:diff}Difference Plot"}
+plotDifference(fs.deming, main= paste(params$analyte, "Method Comparision"))
+```
+
+```{r}
+fsintercept <- fs.deming@para[1,1] # intercept
+fsslope <- fs.deming@para[2,1] # slope
+``` 
+
+* The regression parameters (table \ref{tab:fs}) were used to
+  determine the effect of the GSP method  on the 99%tile  fail-safe threshold.
+
+* A `r params$analyte` result of `r reg(fsslope, failsafe,
+  fsintercept)` `r info$units` on the GSP platform is equivalent to a
+  value at the screening threshold (`r failsafe` `r info$units`)
+  with the AutoDelfia.
+
+\FloatBarrier
+

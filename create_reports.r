@@ -1,8 +1,8 @@
 library("rmarkdown")
 library("shiny")
 
-Rmd_template <- "./src/Method_validation_report.Rmd"
-pdf_output <- "./src/Method_validation_report.pdf"
+Rmd_template <- "method_validation_master.Rmd"
+pdf_output <- "method_validation_master.pdf"
 
 render_document <- function(analyte, file) {
     rmarkdown::render(Rmd_template,
@@ -16,7 +16,7 @@ render_query <- function() {
 
 rename_document <- function(analyte){
     file.rename(from = pdf_output,
-                to = paste0("./reports/", analyte, "_GSP_Method_Validation", ".pdf"))
+                to = paste0("../reports/", analyte, "_GSP_Method_Validation", ".pdf"))
 }
 
 create_report <- function(analyte, file){
@@ -26,7 +26,7 @@ create_report <- function(analyte, file){
 
 create_report(analyte = "TSH", file = "../data/TSH_GSP_validation.xls")
 create_report(analyte = "N17P", file = "../data/N17P_GSP_validation.xls")
-create_report(analyte = "IRT", file = "../data/N17P_GSP_validation.xls")
+create_report(analyte = "IRT", file = "../data/IRT_GSP_validation.xls")
 
 ## params = list(analyte = "TSH", file = "TSH_lot_validation_2017-04-05.xls",
 ##                 recommendation = "This reagent lot is acceptable for use")

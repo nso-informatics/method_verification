@@ -1,0 +1,105 @@
+---
+title: "GSP Method Verification"
+author: Sven Eberhard, Amy Chambers and Matthew Henderson
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: 
+    pdf_document:
+        keep_tex: false
+        includes:
+            in_header: ../resources/header.tex
+        fig_caption: yes
+        number_sections: yes
+fontsize: 11pt 
+geometry: margin=1in
+params:
+    analyte: 
+        label: "Analyte:"
+        value: "TSH"
+        input: select
+        choices: [TSH, N17P, IRT]
+    file: 
+        label: "Input dataset:"
+        value: ./data/N17P_GSP_validation.xls
+        input: text
+---
+
+\centering
+\includegraphics[width = 60mm]{../resources/NSO_logo.pdf}
+\raggedright
+\tableofcontents 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=TRUE, warning=FALSE, fig.height=4, fig.width=6)
+```
+
+```{r}
+library("dplyr")
+library("magrittr")
+library("ggplot2")
+library("tidyr")
+library("mcr")
+library("readxl")
+library("pander")
+library("qcc")
+
+## Used for testing
+## params <- list(analyte = "N17P", file = "../data/N17P_GSP_validation.xls")
+## params <- list(analyte = "IRT", file = "../data/IRT_GSP_validation.xls")
+                 
+## set analyte_info dependant on analyte
+ info <- switch(params$analyte,
+                "TSH" = list(units = "mIU/L", threshold = 17, threshold_doc = "TSH_threshold.Rmd",
+                             lower = 1.31, upper = 250, trim = 40),
+                "N17P" = list(units = "nmol/L", threshold = 38, threshold_doc = "N17P_threshold.Rmd",
+                              lower = 0, upper = 299.2, trim = 60),
+                "IRT" = list(units = "ng/ml", threshold = 48, threshold_doc = "IRT_threshold.Rmd",
+                             lower = 9, upper = 500, trim = 100))
+
+## excel workbook sheets
+sheets <- list(comp = 1, precision = 2, prelim = 3, linearity = 4, lob = 5)
+
+## getwd()
+## N17OHP ng/mL -> nmol/L conversion factor 1.36
+## N17OHP 1.4ng/mL to 220ng/mL
+## N17OHP 1.904 nmol/L to 299.2 nmol/L
+## NTSH 1.31uU/mL to 250uU/mL
+## IRT 9ng/ml to 500ng/mL
+```
+
+# Background
+
+# Methods
+
+# Recommendations
+
+## Sample type
+
+## Sample stability
+
+## Analytical Measurement Range
+
+Analytical measurement range (AMR) is determined by the manufacturer for each kit lot. The AMR for the kit lot used in this validation is 
+
+
+```{r child = 'precsion.Rmd'}
+```
+\newpage
+
+```{r child = 'amr.Rmd'}
+```
+
+\newpage
+
+```{r child = 'comparison.Rmd'}
+```
+
+\newpage
+
+```{r child = info$threshold_doc}
+```
+
+
+\newpage
+
+```{r child = 'interference.Rmd'}
+```

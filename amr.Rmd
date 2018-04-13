@@ -1,0 +1,55 @@
+# Analytical Measurement Range #
+
+## Linearity ##
+
+```{r}
+linearity <- read_xls(params$file, sheet = sheets$linearity)
+
+linearity %>%
+    ggplot(aes(x=target, y=result)) +
+    geom_point(colour = 'black') +
+    scale_colour_hue(name="Models", labels=c('1st','2nd','3rd')) +
+    geom_smooth(aes(colour = 'red'), method = 'lm',
+                formula = 'y ~ x') +
+    geom_smooth(aes(colour = 'blue'), method = 'lm',
+                formula = 'y ~ poly(x,2)') +
+    geom_smooth(aes(colour = 'green'), method = 'lm',
+                formula = 'y ~ poly(x,3)') +
+    facet_wrap(~ instrument) +
+    xlab(paste(params$analyte,"calibrator", info$units)) +
+    ylab(info$units)
+``` 
+
+
+## Limit of Blank
+
+\[
+LoB = \bar{x}_{blank} + 1.645(SD_{blank})
+\]
+
+```{r}
+lob <- read_xls(params$file, sheet = sheets$lob)
+
+# QC distribution
+lob %>%
+    ggplot(aes(result, fill = factor(instrument))) +
+    geom_density(alpha = 0.5) +
+    facet_grid(instrument~.) +
+    xlab(paste(params$analyte, info$units)) +
+    scale_fill_discrete("Instrument")
+
+``` 
+
+
+```{r}
+lob %>%
+    group_by(instrument) %>%
+    summarize(n = n(),
+              mean = mean(result),
+              sd = sd(result),
+              lob = mean + 1.645*sd) %>%
+    pander::pander()
+              
+``` 
+
+\FloatBarrier

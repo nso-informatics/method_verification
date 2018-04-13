@@ -24,7 +24,6 @@ params:
 ---
 
 \centering
-
 \includegraphics[width = 60mm]{../resources/NSO_logo.pdf}
 \raggedright
 \tableofcontents 
@@ -43,18 +42,18 @@ library("readxl")
 library("pander")
 library("qcc")
 
-
 ## Used for testing
-## params <- list(analyte = "N17P", file = "./data/N17P_GSP_validation.xls")
+## params <- list(analyte = "N17P", file = "../data/N17P_GSP_validation.xls")
+## params <- list(analyte = "IRT", file = "../data/IRT_GSP_validation.xls")
                  
 ## set analyte_info dependant on analyte
  info <- switch(params$analyte,
                 "TSH" = list(units = "mIU/L", threshold = 17, lower = 1.31, upper = 250, trim = 40),
                 "N17P" = list(units = "nmol/L", threshold = 38, lower = 0, upper = 299.2, trim = 60),
-                "IRT" = list(units = "ng/ml", threshold = 48, lower = 9, upper = 500, trim = 100))
+                "IRT" = list(units = "ng/ml", threshold = c(48,117.5), lower = 9, upper = 500, trim = 100))
 
 ## excel workbook sheets
-sheets <- list(comp = 1, precision = 2, prelim = 3, linearity = 4)
+sheets <- list(comp = 1, precision = 2, prelim = 3, linearity = 4, lob = 5)
 
 ## getwd()
 ## N17OHP ng/mL -> nmol/L conversion factor 1.36
@@ -141,6 +140,7 @@ precision %>%
 
 ``` 
 
+\clearpage
 
 ```{r}
 ## Within-run imprecision
@@ -179,15 +179,60 @@ within %>%
 
 ```
  
-\clearpage
-
+# Analytical Measurement Range #
 
 ## Linearity ##
 
 ```{r}
-precision <- read_xls(params$file, sheet = sheets$precision)
+linearity <- read_xls(params$file, sheet = sheets$linearity)
+
+linearity %>%
+    ggplot(aes(x=target, y=result)) +
+    geom_point(colour = 'black') +
+    scale_colour_hue(name="Models", labels=c('1st','2nd','3rd')) +
+    geom_smooth(aes(colour = 'red'), method = 'lm',
+                formula = 'y ~ x') +
+    geom_smooth(aes(colour = 'blue'), method = 'lm',
+                formula = 'y ~ poly(x,2)') +
+    geom_smooth(aes(colour = 'green'), method = 'lm',
+                formula = 'y ~ poly(x,3)') +
+    facet_wrap(~ instrument) +
+    xlab(paste(params$analyte,"calibrator", info$units)) +
+    ylab(info$units)
+``` 
+
+
+## Limit of Blank
+
+\[
+LoB = \bar{x}_{blank} + 1.645(SD_{blank})
+\]
+
+```{r}
+lob <- read_xls(params$file, sheet = sheets$lob)
+
+# QC distribution
+lob %>%
+    ggplot(aes(result, fill = factor(instrument))) +
+    geom_density(alpha = 0.5) +
+    facet_grid(instrument~.) +
+    xlab(paste(params$analyte, info$units)) +
+    scale_fill_discrete("Instrument")
 
 ``` 
+
+
+```{r}
+lob %>%
+    group_by(instrument) %>%
+    summarize(n = n(),
+              mean = mean(result),
+              sd = sd(result),
+              lob = mean + 1.645*sd) %>%
+    pander::pander()
+              
+``` 
+
 
 # Comparison # 
 
@@ -195,6 +240,8 @@ precision <- read_xls(params$file, sheet = sheets$precision)
 
 ```{r}
 comp <- read_xls(params$file, sheet = params$comp)
+comp$GSP <- gsub(pattern="<|>",replacement="", x=comp$GSP, perl = TRUE) ## remove <,>
+comp$GSP <- as.numeric(comp$GSP)
 comp %<>%
     na.omit() %>%
     filter(GSP > info$lower)
@@ -232,22 +279,11 @@ pander::pander(t.test(comp$AD, comp$GSP, paired = TRUE),
                    caption = "\\label{tab:paired}Paired T-test")
 ```
 
-### ANOVA ###
-
-```{r}
-diff <- comp$GSP - comp$AD
-inst <- factor(comp$instrument)
-fit <- aov(diff ~ inst) 
-pander::pander(summary(fit))
-```
-
 \clearpage
 
 ### Regression Analysis ###
 
-
 ```{r, fig.cap="\\label{fig:dem}Deming regression"}
-
 comp.deming <- mcreg(x = comp$AD, y =comp$GSP, error.ratio = 1, alpha = 0.05,
                      mref.name = "AD", mtest.name = "GSP", sample.names = NULL,
                      method.reg = "Deming", method.ci = "bootstrap",
@@ -335,20 +371,22 @@ reg <- function(m,x,b){
     * x = 0.37224 (mmol/L)/(mg/ml)
     * 1.8 mg/ml * 0.37224 (mmol/L)/(mg/ml) = 0.670032 mmol/L
     
-* Molarity of a full vacutainer assuming disodium EDTA dihydrate:
+* Make a 100 ml 0.5M EDTA stock:
+    * 372.24 g/mol * 0.5 mol/L * 100 ml/1000 ml/L =  18.6 g
+    * 18.6 g up to 100 ml of water
+    * EDTA will go into solution at pH 8.0
+    * add NaOH pellet to pH 8.0 
+    
+* Create a working solution of 100 mM EDTA
+    * 200 ul 0.5 M EDTA + 800 ul water 
+* Create a serial dilution:
+  * 50 mmol/L = 500 ul (100mM EDTA) + 500 ul Water
+  * 25 mmol/L = 500 ul (50mM EDTA) + 500 ul Water
+  * 12.5 mmol/L = 500 ul (25mM EDTA) + 500 ul Water
+  * 6.25 mmol/L = 500 ul (12.5mM EDTA) + 500 ul Water
+  * 3.125 mmol/L = 500 ul (6.2mM EDTA) + 500 ul Water
 
-    * g/mmol =  372.24 g/mol * 1/1000  mol/mmol
-    * g/mmol =  0.37224 
+* Add 75 ul of each concentration to the filter paper cards:
 
-* Make a 50 mmol/L stock:
-    * 50 mmol/L = 50 * 0.37224 g/mmol in 1 L =  18.612g
-    * To make 100 ml dissolve 1.8 g ( 18.612/10 = 1.86) in 100 ml of water.
-
-* Replicate GSP paper results using a serial dilution as follows: 
-  * 50 mmol/L
-  * 25 mmol/L
-  * 12.5 mmol/L
-  * 6.25 mmol/L
-  * 3.125 mmol/L
   
 \clearpage

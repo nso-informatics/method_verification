@@ -1,0 +1,33 @@
+# Interference # 
+
+## EDTA study ##
+
+* We are using disodium EDTA dihydrate
+    * FW = 372.24 g/mol
+
+* In a full EDTA tube there is 1.8 mg EDTA per millilitre of blood,
+  this is equivalent to:
+    * x mg/ml = 372.24 mg/mmol * 1/1000  L/ml
+    * x = 0.37224 (mmol/L)/(mg/ml)
+    * 1.8 mg/ml * 0.37224 (mmol/L)/(mg/ml) = 0.670032 mmol/L
+    
+* Make a 100 ml 0.5M EDTA stock:
+    * 372.24 g/mol * 0.5 mol/L * 100 ml/1000 ml/L =  18.6 g
+    * 18.6 g up to 100 ml of water
+    * EDTA will go into solution at pH 8.0
+    * add NaOH pellet to pH 8.0 
+    
+* Create a working solution of 100 mM EDTA
+    * 200 ul 0.5 M EDTA + 800 ul water 
+* Create a serial dilution:
+  * 50 mmol/L = 500 ul (100mM EDTA) + 500 ul Water
+  * 25 mmol/L = 500 ul (50mM EDTA) + 500 ul Water
+  * 12.5 mmol/L = 500 ul (25mM EDTA) + 500 ul Water
+  * 6.25 mmol/L = 500 ul (12.5mM EDTA) + 500 ul Water
+  * 3.125 mmol/L = 500 ul (6.2mM EDTA) + 500 ul Water
+
+* Add 75 ul of each concentration to the filter paper cards:
+
+  
+\FloatBarrier
+
