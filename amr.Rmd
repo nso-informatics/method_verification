@@ -2,7 +2,7 @@
 
 ## Linearity ##
 
-```{r}
+```{r, fig.cap="\\label{fig:linearity}Linearity"}
 linearity <- read_xls(params$file, sheet = sheets$linearity)
 
 linearity %>%
@@ -27,7 +27,7 @@ linearity %>%
 LoB = \bar{x}_{blank} + 1.645(SD_{blank})
 \]
 
-```{r}
+```{r, fig.cap="\\label{fig:lob}Distribution of Results for Blank Samples"}
 lob <- read_xls(params$file, sheet = sheets$lob)
 
 # QC distribution
@@ -40,7 +40,6 @@ lob %>%
 
 ``` 
 
-
 ```{r}
 lob %>%
     group_by(instrument) %>%
@@ -48,8 +47,8 @@ lob %>%
               mean = mean(result),
               sd = sd(result),
               lob = mean + 1.645*sd) %>%
-    pander::pander()
+    pander::pander(caption = "\\label{tab:lob}Limit of Blank")
               
 ``` 
 
-\FloatBarrier
+\clearpage

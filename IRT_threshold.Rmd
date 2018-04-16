@@ -11,13 +11,15 @@ failsafe <- 117.5 ## threshold
 * IRT screening employs two rolling percentile thresholds
     * 96%tile from a 4 week period ~ 49.9 ng/ml
     * 99%tile from a 12 week period ~ 117.5 ng/ml
-* Comparison data from for value near the screening thresholds was used to calculate regression equations
+
+* Comparison data from samples near the screening thresholds was used to calculate regression equation
+
 
 ## 96th percentile ##
 * The comparison data set was filtered to remove values less than 30 ng/ml and greater than 70.
 
 ```{r, fig.cap="\\label{fig:dem}Filtered Deming regression"}
-co <- comp %>%
+co <- comp %>% ## comp is created in the comparison file
      filter(AD >= 30 & AD <= 70)  ## data close to the 96%tile
 
 co.deming <- mcreg(x = co$AD, y =co$GSP, error.ratio = 1, alpha = 0.05,

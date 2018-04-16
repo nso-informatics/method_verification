@@ -15,7 +15,7 @@ prelim %>%
               mean = mean(result),
               sd = sd(result),
               cv = sd/mean *100) %>%
-    pander::pander()
+    pander::pander(caption = "\\label{tab:prelim}Preliminary Precision")
 ```
 
 ## Within and Between Run Precision ##
@@ -32,7 +32,7 @@ guidelines. Total imprecision was compared against the manufacturer
 claim.
 
 
-```{r}
+```{r, fig.cap="\\label{fig:QC_den}Distribution of QC Results by Instrument"}
 precision <- read_xls(params$file, sheet = sheets$precision)
 
 # QC distribution
@@ -46,7 +46,8 @@ precision %>%
 
 ``` 
 
-```{r}
+
+```{r, fig.cap="\\label{fig:LJ} Levey-Jennings Charts"}
 # Pseudo LJ charts
 precision %>%
     gather(rep, result, rep1:rep3) %>%
@@ -94,8 +95,10 @@ within %>%
     summarize(mean = mean,
               sd_within = sqrt(var_within),
               sd_btwn = sqrt(var_btwn),
-              sd_total = sqrt(var_within + var_btwn)) %>%
-    pander::pander()
+              sd_total = sqrt(var_within + var_btwn),
+              cv_total = sd_total/mean * 100) %>%
+    pander::pander(caption = "\\label{tab:pre}Within and Between Run Precision")
 
 ```
+
 \FloatBarrier

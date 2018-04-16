@@ -5,10 +5,7 @@ Rmd_template <- "method_verification_report.Rmd"
 pdf_output <- "method_verification_report.pdf"
 
 render_document <- function(analyte, file) {
-    rmarkdown::render(Rmd_template,
-                      params = list(
-                          analyte = analyte,
-                          file = file))
+    rmarkdown::render(Rmd_template, params = list(analyte = analyte, file = file))
 }
 
 render_query <- function() {
@@ -27,12 +24,4 @@ create_report <- function(analyte, file){
 create_report(analyte = "TSH", file = "../data/TSH_GSP_validation.xls")
 create_report(analyte = "N17P", file = "../data/N17P_GSP_validation.xls")
 create_report(analyte = "IRT", file = "../data/IRT_GSP_validation.xls")
-
-## params = list(analyte = "TSH", file = "TSH_lot_validation_2017-04-05.xls",
-##                 recommendation = "This reagent lot is acceptable for use")
-
-## rmarkdown::render(Rmd_template,
-##                   params = list(analyte = "TSH", file = "TSH_lot_validation_2018-02-27.xls",
-##                                 recommendation = "accepted"))
-
 

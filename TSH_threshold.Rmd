@@ -1,22 +1,97 @@
 # Screening Thresholds #
- 
-* The regression parameters (table \ref{tab:para}) were used to
-  determine the effect of the GSP method  on the screening threshold.
 
 ```{r}
-intercept <- trim.deming@para[1,1] # intercept
-slope <- trim.deming@para[2,1] # slope
-
 reg <- function(m,x,b){
       y <- m * x + b
       return(round(y, digits = 3))
 }
+
+borderline <- 13
+cutoff <- 17
 ```
 
-* A `r params$analyte` result of `r reg(slope, info$threshold,
-  intercept)` `r info$units` on the GSP platform is equivalent to a
-  value at the screening threshold (`r info$threshold` `r info$units`)
-  with the AutoDelfia.
+* TSH screening employs a positive and borderline thresholds
+    * positive $\ge$ 17
+    * borderline $\ge$ 13
+
+* Comparison data from samples near the screening thresholds was used to calculate regression equations
+
+## Borderline Threshold ##
+
+* The comparison data set was filtered to remove values less than 5 mIU/L and greater than 20 mIU/L.
+
+```{r, fig.cap="\\label{fig:dem}Filtered Deming regression"}
+bl <- comp %>%  ## comp is created in the comparison file
+     filter(AD >= 5 & AD <= 20)  ## data close to the borderline threshold
+
+bl.deming <- mcreg(x = bl$AD, y =bl$GSP, error.ratio = 1, alpha = 0.05,
+                     mref.name = "AD", mtest.name = "GSP", sample.names = NULL,
+                     method.reg = "Deming", method.ci = "bootstrap",
+                     method.bootstrap.ci = "BCa",
+                     nsamples = 999, rng.seed = NULL, rng.kind = "Mersenne-Twister", iter.max = 30,
+                     threshold = 1e-06, na.rm = TRUE, NBins = 1e+06)
+
+plot(bl.deming, x.lab = "Old", y.lab = "New", main=paste(params$analyte, "Borderline Threshold Comparison"))
+```
+
+```{r}    
+pander::pander(bl.deming@para, caption = "\\label{tab:bl}Regression Parameters")
+```
+
+```{r,fig.cap="\\label{fig:diff}Difference Plot"}
+plotDifference(bl.deming, main= paste(params$analyte, "Borderline Threshold Comparision"))
+```
+
+```{r}
+blintercept <- bl.deming@para[1,1] # intercept
+blslope <- bl.deming@para[2,1] # slope
+``` 
+  
+* The regression parameters (table \ref{tab:bl}) were used to
+  determine the effect of the GSP method on the borderline threshold.
+
+* A `r params$analyte` result of `r reg(blslope, borderline,
+  blintercept)` `r info$units` on the GSP platform is equivalent to
+  borderline value (`r borderline` `r info$units`) with the AutoDelfia.
+  
+  
+## Positive Threshold ##
+
+* The comparison data set was filtered to remove values less than 10 mIU/L and greater than 30 mIU/L.
+
+```{r, fig.cap="\\label{fig:dem}Filtered Deming regression"}
+co <- comp %>%  ## comp is created in the comparison file
+     filter(AD >= 10 & AD <= 30)  ## data close to the borderline threshold
+
+co.deming <- mcreg(x = co$AD, y =co$GSP, error.ratio = 1, alpha = 0.05,
+                     mref.name = "AD", mtest.name = "GSP", sample.names = NULL,
+                     method.reg = "Deming", method.ci = "bootstrap",
+                     method.bootstrap.ci = "BCa",
+                     nsamples = 999, rng.seed = NULL, rng.kind = "Mersenne-Twister", iter.max = 30,
+                     threshold = 1e-06, na.rm = TRUE, NBins = 1e+06)
+
+plot(co.deming, x.lab = "Old", y.lab = "New", main=paste(params$analyte, "Positive Threshold Comparision"))
+```
+
+```{r}    
+pander::pander(co.deming@para, caption = "\\label{tab:co}Regression Parameters")
+```
+
+```{r,fig.cap="\\label{fig:diff}Difference Plot"}
+plotDifference(co.deming, main= paste(params$analyte, "Positive Threshold Comparision"))
+```
+
+```{r}
+cointercept <- co.deming@para[1,1] # intercept
+coslope <- co.deming@para[2,1] # slope
+``` 
+  
+* The regression parameters (table \ref{tab:co}) were used to
+  determine the effect of the GSP method on the screening threshold.
+
+* A `r params$analyte` result of `r reg(coslope, cutoff, cointercept)`
+  `r info$units` on the GSP platform is equivalent to a value at the
+  screening threshold (`r cutoff` `r info$units`) with the AutoDelfia.
 
 \FloatBarrier
 

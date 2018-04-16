@@ -7,10 +7,10 @@ comp <- read_xls(params$file, sheet = params$comp)
 comp$GSP <- gsub(pattern="<|>",replacement="", x=comp$GSP, perl = TRUE) ## remove <,>
 comp$GSP <- as.numeric(comp$GSP)
 comp %<>%
-    na.omit() %>%
-    filter(GSP > info$lower)
+##    na.omit() %>%
+    filter(GSP >= info$lower & GSP <= info$upper)
 
-pander::pander(summary(comp[, c("AD", "GSP")]))
+pander::pander(summary(comp[, c("AD", "GSP")]), caption = "\\label{tb:comp}Summary of Method Comparison Values")
 ```
 
 ```{r, fig.cap="\\label{fig:dens}Density plot for the method comparison"}
@@ -23,6 +23,8 @@ pander::pander(summary(comp[, c("AD", "GSP")]))
    
   # labs(title = "Density plot for the TSH reagent lot comparison")
 ```
+
+
 ```{r, fig.cap="\\label{fig:dens_inst}Density plot for the method comparison by instrument"}
 comp %>%
       gather(method, result, AD:GSP) %>%
@@ -34,8 +36,6 @@ comp %>%
 
 ``` 
 
-\clearpage
-
 ### Paired T-test ###
 
 ```{r}
@@ -43,7 +43,7 @@ pander::pander(t.test(comp$AD, comp$GSP, paired = TRUE),
                    caption = "\\label{tab:paired}Paired T-test")
 ```
 
-\clearpage
+\FloatBarrier
 
 ### Regression Analysis ###
 
@@ -58,44 +58,21 @@ comp.deming <- mcreg(x = comp$AD, y =comp$GSP, error.ratio = 1, alpha = 0.05,
 plot(comp.deming, x.lab = "AD", y.lab = "GSP", main=paste("Pooled", params$analyte,"Method Comparision"))
 ```
 
-```{r, fig.cap="\\label{fig:dem_inst}Deming regression for instrument"}
+
+```{r, fig.cap="\\label{fig:dem_inst}Deming regression by instrument"}
 for (inst in c(344, 348, 349)){
-comp_inst<- comp %>%
-    filter(instrument == inst)
+    comp_inst<- comp %>%
+        filter(instrument == inst)
 
-comp_inst.deming <- mcreg(x = comp_inst$AD, y =comp_inst$GSP, error.ratio = 1, alpha = 0.05,
-                     mref.name = "AD", mtest.name = "GSP", sample.names = NULL,
-                     method.reg = "Deming", method.ci = "bootstrap",
-                     method.bootstrap.ci = "BCa",
-                     nsamples = 999, rng.seed = NULL, rng.kind = "Mersenne-Twister", iter.max = 30,
-                     threshold = 1e-06, na.rm = TRUE, NBins = 1e+06)
+    comp_inst.deming <- mcreg(x = comp_inst$AD, y =comp_inst$GSP, error.ratio = 1, alpha = 0.05,
+                              mref.name = "AD", mtest.name = "GSP", sample.names = NULL,
+                              method.reg = "Deming", method.ci = "bootstrap",
+                              method.bootstrap.ci = "BCa",
+                              nsamples = 999, rng.seed = NULL, rng.kind = "Mersenne-Twister", iter.max = 30,
+                              threshold = 1e-06, na.rm = TRUE, NBins = 1e+06)
 
-plot(comp_inst.deming, x.lab = "AD", y.lab = "GSP", main=paste(inst, params$analyte, "Method Comparision" ))
+    plot(comp_inst.deming, x.lab = "AD", y.lab = "GSP", main=paste(inst, params$analyte, "Method Comparision" ))
 }
 ```
 
-* The data set was filtered to remove values greater than `r info$trim`.
-
-```{r, fig.cap="\\label{fig:dem}Filtered Deming regression"}
-trim <- comp %>%
-     filter(AD <= info$trim)
-
-trim.deming <- mcreg(x = trim$AD, y =trim$GSP, error.ratio = 1, alpha = 0.05,
-                     mref.name = "AD", mtest.name = "GSP", sample.names = NULL,
-                     method.reg = "Deming", method.ci = "bootstrap",
-                     method.bootstrap.ci = "BCa",
-                     nsamples = 999, rng.seed = NULL, rng.kind = "Mersenne-Twister", iter.max = 30,
-                     threshold = 1e-06, na.rm = TRUE, NBins = 1e+06)
-
-plot(trim.deming, x.lab = "Old", y.lab = "New", main=paste(params$analyte, "Filtered Method Comparision"))
-```
-
-```{r}    
-pander::pander(trim.deming@para, caption = "\\label{tab:para}Regression Parameters")
-```
-
-```{r,fig.cap="\\label{fig:diff}Difference Plot"}
-plotDifference(trim.deming, main= paste(params$analyte, "Method Comparision"))
-```
-
-\clearpage
+\FloatBarrier
