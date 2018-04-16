@@ -1,8 +1,8 @@
 library("rmarkdown")
 library("shiny")
 
-Rmd_template <- "method_validation_master.Rmd"
-pdf_output <- "method_validation_master.pdf"
+Rmd_template <- "method_verification_report.Rmd"
+pdf_output <- "method_verification_report.pdf"
 
 render_document <- function(analyte, file) {
     rmarkdown::render(Rmd_template,
