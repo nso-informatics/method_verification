@@ -4,7 +4,7 @@ author: Sven Eberhard, Amy Chambers and Matthew Henderson
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output: 
     pdf_document:
-        keep_tex: true
+        keep_tex: false
         includes:
             in_header: ../resources/header.tex
         fig_caption: yes
@@ -58,7 +58,7 @@ library("qcc")
                              lower = 9, upper = 500))
 
 ## excel workbook sheets
-sheets <- list(comp = 1, precision = 2, prelim = 3, linearity = 8, lob = 5)
+sheets <- list(comp = 1, precision = 2, prelim = 3, linearity = 8, lob = 5, inter = 9)
 
 ## getwd()
 ## N17OHP ng/mL -> nmol/L conversion factor 1.36
@@ -67,7 +67,6 @@ sheets <- list(comp = 1, precision = 2, prelim = 3, linearity = 8, lob = 5)
 ## NTSH 1.31uU/mL to 250uU/mL
 ## IRT 9ng/ml to 500ng/mL
 ```
-
 # Background
 
 # Methods
@@ -86,22 +85,17 @@ Analytical measurement range (AMR) is determined by the manufacturer for each ki
 ```{r child = 'precsion.Rmd'}
 ```
 \newpage
-
 ```{r child = 'amr.Rmd'}
 ```
-
 \newpage
-
 ```{r child = 'comparison.Rmd'}
 ```
-
 \newpage
-
 ```{r child = info$threshold_doc}
 ```
-
-
 \newpage
-
+```{r child = 'inter.Rmd'}
+```
+\newpage
 ```{r child = 'interference.Rmd'}
 ```

@@ -1,0 +1,17 @@
+# Inter-GSP Comparison #
+
+## Data Summary ##
+
+```{r}
+gsp <- read_xls(params$file, sheet = sheets$inter)
+
+gsp %>%
+    select(GSP344, GSP348, GSP349) %>%
+    summary() %>%
+    pander::pander(caption = "\\label{tb:comp}Summary of Method Comparison Values")
+```
+
+
+
+
+

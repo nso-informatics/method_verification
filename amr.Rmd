@@ -21,11 +21,25 @@ linearity %>%
 ``` 
 
 
+## Limit of Quantitation ##
+```{r}
+
+linearity %>%
+    group_by(Level) %>%
+    summarize(n = n(),
+              mean = mean(result),
+              sd = sd(result),
+              cv = sd/mean * 100) %>%
+    pander::pander(caption = "\\label{tab:loq}Limit of Quantitation")
+
+```
+
 ## Limit of Blank
 
 \[
 LoB = \bar{x}_{blank} + 1.645(SD_{blank})
 \]
+
 
 ```{r, fig.cap="\\label{fig:lob}Distribution of Results for Blank Samples"}
 lob <- read_xls(params$file, sheet = sheets$lob)

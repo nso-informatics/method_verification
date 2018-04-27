@@ -43,7 +43,7 @@ pander::pander(t.test(comp$AD, comp$GSP, paired = TRUE),
                    caption = "\\label{tab:paired}Paired T-test")
 ```
 
-\FloatBarrier
+\clearpage
 
 ### Regression Analysis ###
 

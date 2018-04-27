@@ -29,7 +29,7 @@ co.deming <- mcreg(x = co$AD, y =co$GSP, error.ratio = 1, alpha = 0.05,
                      nsamples = 999, rng.seed = NULL, rng.kind = "Mersenne-Twister", iter.max = 30,
                      threshold = 1e-06, na.rm = TRUE, NBins = 1e+06)
 
-plot(co.deming, x.lab = "Old", y.lab = "New", main=paste(params$analyte, "Filtered Method Comparision"))
+plot(co.deming, x.lab = "AD", y.lab = "GSP", main=paste(params$analyte, "Filtered Method Comparision"))
 ```
 
 ```{r}    
@@ -67,7 +67,7 @@ fs.deming <- mcreg(x = fs$AD, y =fs$GSP, error.ratio = 1, alpha = 0.05,
                      nsamples = 999, rng.seed = NULL, rng.kind = "Mersenne-Twister", iter.max = 30,
                      threshold = 1e-06, na.rm = TRUE, NBins = 1e+06)
 
-plot(fs.deming, x.lab = "Old", y.lab = "New", main=paste(params$analyte, "Filtered Method Comparision"))
+plot(fs.deming, x.lab = "AD", y.lab = "GSP", main=paste(params$analyte, "Filtered Method Comparision"))
 ```
 
 ```{r}    

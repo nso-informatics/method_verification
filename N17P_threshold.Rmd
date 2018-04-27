@@ -1,4 +1,74 @@
 # Screening Thresholds #
 
-* *TODO !!*
+```{r}
+reg <- function(m,x,b){
+      y <- m * x + b
+      return(round(y, digits = 3))
+}
+
+conc1 <- 38
+
+```
+
+* CAH screening employs GA and BW specific screening thresholds
+
+GA: 38, 55, 105, 200
+BW: 38, 52, 91, 160
+Alert: 120, 200, 300
+
+
+* Comparison data from samples near the screening thresholds was used to calculate regression equations
+
+## Conservative Threshold ##
+
+* Threshold used when:
+    * GA \ge 36.1 ww.d 
+    * BW \ge 2500 g 
+    * AOC \ge 420 hours
+    * BW and GA are unknown
+
+* The comparison data set was filtered to remove values less than 20 nmol/L and greater than 60 nmol/L.
+
+```{r, fig.cap="\\label{fig:dem}Filtered Deming regression"}
+conservative <- comp %>%  ## comp is created in the comparison file
+     filter(AD >= 20 & AD <= 60)  ## data close to the borderline threshold
+
+conservative.deming <- mcreg(x = conservative$AD, y =conservative$GSP, error.ratio = 1, alpha = 0.05,
+                     mref.name = "AD", mtest.name = "GSP", sample.names = NULL,
+                     method.reg = "Deming", method.ci = "bootstrap",
+                     method.bootstrap.ci = "BCa",
+                     nsamples = 999, rng.seed = NULL, rng.kind = "Mersenne-Twister", iter.max = 30,
+                     threshold = 1e-06, na.rm = TRUE, NBins = 1e+06)
+
+plot(conservative.deming, x.lab = "AD", y.lab = "GSP", main=paste(params$analyte, "Conservative Threshold Comparison"))
+```
+
+```{r}    
+pander::pander(conservative.deming@para, caption = "\\label{tab:conservative}Regression Parameters")
+```
+
+```{r,fig.cap="\\label{fig:diff}Difference Plot"}
+plotDifference(conservative.deming, main= paste(params$analyte, "Borderline Threshold Comparision"))
+```
+
+```{r}
+conservativeintercept <- conservative.deming@para[1,1] # intercept
+conservativeslope <- conservative.deming@para[2,1] # slope
+``` 
+  
+* The regression parameters (table \ref{tab:conservative}) were used to
+  determine the effect of the GSP method on the borderline threshold.
+
+* A `r params$analyte` result of `r reg(conservativeslope, conc1,
+  conservativeintercept)` `r info$units` on the GSP platform is
+  equivalent to borderline value (`r conc1` `r info$units`) with the
+  AutoDelfia.
+  
+  
+
+## Transfer of "Conc3" and "Conc6" Thresholds
+
+* "Conc3" GA 35.1 - 36.0 = 55 
+* "Conc6" GW 1500 - 2400 = 52
+
 

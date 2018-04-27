@@ -31,7 +31,7 @@ bl.deming <- mcreg(x = bl$AD, y =bl$GSP, error.ratio = 1, alpha = 0.05,
                      nsamples = 999, rng.seed = NULL, rng.kind = "Mersenne-Twister", iter.max = 30,
                      threshold = 1e-06, na.rm = TRUE, NBins = 1e+06)
 
-plot(bl.deming, x.lab = "Old", y.lab = "New", main=paste(params$analyte, "Borderline Threshold Comparison"))
+plot(bl.deming, x.lab = "AD", y.lab = "GSP", main=paste(params$analyte, "Borderline Threshold Comparison"))
 ```
 
 ```{r}    
@@ -57,11 +57,11 @@ blslope <- bl.deming@para[2,1] # slope
   
 ## Positive Threshold ##
 
-* The comparison data set was filtered to remove values less than 10 mIU/L and greater than 30 mIU/L.
+* The comparison data set was filtered to remove values less than 7 mIU/L and greater than 27 mIU/L.
 
 ```{r, fig.cap="\\label{fig:dem}Filtered Deming regression"}
 co <- comp %>%  ## comp is created in the comparison file
-     filter(AD >= 10 & AD <= 30)  ## data close to the borderline threshold
+     filter(AD >= 7 & AD <= 27)  ## data close to the borderline threshold
 
 co.deming <- mcreg(x = co$AD, y =co$GSP, error.ratio = 1, alpha = 0.05,
                      mref.name = "AD", mtest.name = "GSP", sample.names = NULL,
@@ -70,7 +70,7 @@ co.deming <- mcreg(x = co$AD, y =co$GSP, error.ratio = 1, alpha = 0.05,
                      nsamples = 999, rng.seed = NULL, rng.kind = "Mersenne-Twister", iter.max = 30,
                      threshold = 1e-06, na.rm = TRUE, NBins = 1e+06)
 
-plot(co.deming, x.lab = "Old", y.lab = "New", main=paste(params$analyte, "Positive Threshold Comparision"))
+plot(co.deming, x.lab = "AD", y.lab = "GSP", main=paste(params$analyte, "Positive Threshold Comparision"))
 ```
 
 ```{r}    

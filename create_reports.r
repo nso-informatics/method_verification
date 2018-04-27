@@ -24,4 +24,3 @@ create_report <- function(analyte, file){
 create_report(analyte = "TSH", file = "../data/TSH_GSP_validation.xls")
 create_report(analyte = "N17P", file = "../data/N17P_GSP_validation.xls")
 create_report(analyte = "IRT", file = "../data/IRT_GSP_validation.xls")
-

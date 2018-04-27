@@ -34,6 +34,8 @@ claim.
 
 ```{r, fig.cap="\\label{fig:QC_den}Distribution of QC Results by Instrument"}
 precision <- read_xls(params$file, sheet = sheets$precision)
+precision %<>% na.omit()
+
 
 # QC distribution
 precision %>%
@@ -97,8 +99,19 @@ within %>%
               sd_btwn = sqrt(var_btwn),
               sd_total = sqrt(var_within + var_btwn),
               cv_total = sd_total/mean * 100) %>%
-    pander::pander(caption = "\\label{tab:pre}Within and Between Run Precision")
+    pander::pander(caption = "\\label{tab:pre}Within and Between Run Precision by Instrument")
+
+within %>%
+    group_by(level) %>%
+    summarize(mean= mean(mean),
+              sd_within = (sqrt(mean(var_within))),
+              sd_btwn = sqrt(mean(var_btwn)),
+              sd_total = sqrt(mean(var_within + var_btwn)),
+              cv_total = sd_total/mean * 100) %>%
+    pander::pander(caption = "\\label{tab:ppre}Pooled Within and Between Run Precision")
 
 ```
+
+
 
 \FloatBarrier
