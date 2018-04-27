@@ -7,7 +7,8 @@ reg <- function(m,x,b){
 }
 
 conc1 <- 38
-
+conc3 <- 55
+conc6 <- 52
 ```
 
 * CAH screening employs GA and BW specific screening thresholds
@@ -16,18 +17,17 @@ GA: 38, 55, 105, 200
 BW: 38, 52, 91, 160
 Alert: 120, 200, 300
 
-
 * Comparison data from samples near the screening thresholds was used to calculate regression equations
 
 ## Conservative Threshold ##
 
 * Threshold used when:
-    * GA \ge 36.1 ww.d 
-    * BW \ge 2500 g 
-    * AOC \ge 420 hours
+    * GA $\ge$ 36.1 ww.d 
+    * BW $\ge$ 2500 g 
+    * AOC $\ge$ 420 hours
     * BW and GA are unknown
 
-* The comparison data set was filtered to remove values less than 20 nmol/L and greater than 60 nmol/L.
+* The comparison data set was filtered to remove values <20 nmol/L and >60 nmol/L.
 
 ```{r, fig.cap="\\label{fig:dem}Filtered Deming regression"}
 conservative <- comp %>%  ## comp is created in the comparison file
@@ -65,10 +65,51 @@ conservativeslope <- conservative.deming@para[2,1] # slope
   AutoDelfia.
   
   
-
 ## Transfer of "Conc3" and "Conc6" Thresholds
 
 * "Conc3" GA 35.1 - 36.0 = 55 
 * "Conc6" GW 1500 - 2400 = 52
 
+* The comparison data set was filtered to remove values >30 nmol/L and >80 nmol/L.
 
+```{r, fig.cap="\\label{fig:dem}Filtered Deming regression"}
+conc36 <- comp %>%  ## comp is created in the comparison file
+     filter(AD >= 30 & AD <= 80)  ## data close to the threshold
+
+conc36.deming <- mcreg(x = conc36$AD, y =conc36$GSP, error.ratio = 1, alpha = 0.05,
+                     mref.name = "AD", mtest.name = "GSP", sample.names = NULL,
+                     method.reg = "Deming", method.ci = "bootstrap",
+                     method.bootstrap.ci = "BCa",
+                     nsamples = 999, rng.seed = NULL, rng.kind = "Mersenne-Twister", iter.max = 30,
+                     threshold = 1e-06, na.rm = TRUE, NBins = 1e+06)
+
+plot(conc36.deming, x.lab = "AD", y.lab = "GSP", main=paste(params$analyte, "Conc3 and Conc6 Thresholds Comparison"))
+```
+
+```{r}    
+pander::pander(conc36.deming@para, caption = "\\label{tab:conc36}Regression Parameters")
+```
+
+```{r,fig.cap="\\label{fig:diff}Difference Plot"}
+plotDifference(conc36.deming, main= paste(params$analyte, "Borderline Threshold Comparision"))
+```
+
+```{r}
+conc36intercept <- conc36.deming@para[1,1] # intercept
+conc36slope <- conc36.deming@para[2,1] # slope
+``` 
+  
+* The regression parameters (table \ref{tab:conc36}) were used to
+  determine the effect of the GSP method on the Conc3 and Conc6 thresholds.
+
+* A `r params$analyte` result of `r reg(conc36slope, conc3,
+  conc36intercept)` `r info$units` on the GSP platform is
+  equivalent to borderline value (`r conc3` `r info$units`) with the
+  AutoDelfia.
+  
+  
+* A `r params$analyte` result of `r reg(conc36slope, conc6,
+  conc36intercept)` `r info$units` on the GSP platform is
+  equivalent to borderline value (`r conc6` `r info$units`) with the
+  AutoDelfia.
+  

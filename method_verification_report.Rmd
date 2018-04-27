@@ -4,7 +4,7 @@ author: Sven Eberhard, Amy Chambers and Matthew Henderson
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output: 
     pdf_document:
-        keep_tex: false
+        keep_tex: true
         includes:
             in_header: ../resources/header.tex
         fig_caption: yes
