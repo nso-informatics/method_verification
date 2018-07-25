@@ -8,18 +8,24 @@ reg <- function(m,x,b){
 
 conc1 <- 38
 conc3 <- 55
+conc4 <- 105
+conc5 <- 200
 conc6 <- 52
+conc7 <- 91
+conc8 <- 160
+alert1 <- 120
+alert2 <- 200
+alert3 <- 300
 ```
 
-* CAH screening employs GA and BW specific screening thresholds
-
-GA: 38, 55, 105, 200
-BW: 38, 52, 91, 160
-Alert: 120, 200, 300
+* CAH screening employs GA and BW specific screening thresholds:
+    * GA: 38, 55, 105, 200
+    * BW: 38, 52, 91, 160
+    * Alert: 120, 200, 300
 
 * Comparison data from samples near the screening thresholds was used to calculate regression equations
 
-## Conservative Threshold ##
+## Conservative Threshold: "conc1, "conc2" and "conc9" ##
 
 * Threshold used when:
     * GA $\ge$ 36.1 ww.d 
@@ -48,7 +54,7 @@ pander::pander(conservative.deming@para, caption = "\\label{tab:conservative}Reg
 ```
 
 ```{r,fig.cap="\\label{fig:diff}Difference Plot"}
-plotDifference(conservative.deming, main= paste(params$analyte, "Borderline Threshold Comparision"))
+plotDifference(conservative.deming, main= paste(params$analyte, "Threshold Comparision"))
 ```
 
 ```{r}
@@ -57,24 +63,25 @@ conservativeslope <- conservative.deming@para[2,1] # slope
 ``` 
   
 * The regression parameters (table \ref{tab:conservative}) were used to
-  determine the effect of the GSP method on the borderline threshold.
+  determine the effect of the GSP method on the conservative threshold.
 
 * A `r params$analyte` result of `r reg(conservativeslope, conc1,
   conservativeintercept)` `r info$units` on the GSP platform is
-  equivalent to borderline value (`r conc1` `r info$units`) with the
+  equivalent to the conservative threshold (`r conc1` `r info$units`) with the
   AutoDelfia.
+
+\FloatBarrier
   
-  
-## Transfer of "Conc3" and "Conc6" Thresholds
+## Transfer of "conc3" and "conc6" thresholds
 
-* "Conc3" GA 35.1 - 36.0 = 55 
-* "Conc6" GW 1500 - 2400 = 52
+* "conc3" GA 35.1 - 36.0 = 55 
+* "conc6" GW 1500 - 2400 = 52
 
-* The comparison data set was filtered to remove values >30 nmol/L and >80 nmol/L.
+* The comparison data set was filtered to remove values <32 nmol/L and >75 nmol/L.
 
-```{r, fig.cap="\\label{fig:dem}Filtered Deming regression"}
+```{r, fig.cap="\\label{fig:dem36}Filtered Deming regression"}
 conc36 <- comp %>%  ## comp is created in the comparison file
-     filter(AD >= 30 & AD <= 80)  ## data close to the threshold
+     filter(AD >= 32 & AD <= 75)  ## data close to the threshold
 
 conc36.deming <- mcreg(x = conc36$AD, y =conc36$GSP, error.ratio = 1, alpha = 0.05,
                      mref.name = "AD", mtest.name = "GSP", sample.names = NULL,
@@ -90,8 +97,8 @@ plot(conc36.deming, x.lab = "AD", y.lab = "GSP", main=paste(params$analyte, "Con
 pander::pander(conc36.deming@para, caption = "\\label{tab:conc36}Regression Parameters")
 ```
 
-```{r,fig.cap="\\label{fig:diff}Difference Plot"}
-plotDifference(conc36.deming, main= paste(params$analyte, "Borderline Threshold Comparision"))
+```{r,fig.cap="\\label{fig:diff36}Difference Plot"}
+plotDifference(conc36.deming, main= paste(params$analyte, "Threshold Comparision"))
 ```
 
 ```{r}
@@ -104,12 +111,141 @@ conc36slope <- conc36.deming@para[2,1] # slope
 
 * A `r params$analyte` result of `r reg(conc36slope, conc3,
   conc36intercept)` `r info$units` on the GSP platform is
-  equivalent to borderline value (`r conc3` `r info$units`) with the
+  equivalent to "conc3" threshold (`r conc3` `r info$units`) with the
   AutoDelfia.
   
   
 * A `r params$analyte` result of `r reg(conc36slope, conc6,
   conc36intercept)` `r info$units` on the GSP platform is
-  equivalent to borderline value (`r conc6` `r info$units`) with the
+  equivalent to "conc6" threshold (`r conc6` `r info$units`) with the
   AutoDelfia.
   
+  
+\FloatBarrier
+
+## Transfer of "conc4" and "conc7" and "alert1"
+
+* "conc4" GA 33.1-35.0 = 105
+* "conc7" GW 1000-1499 = 91
+* Conservative "alert1" = 120
+
+* The comparison data set was filtered to remove values <70 nmol/L and >140 nmol/L.
+
+```{r, fig.cap="\\label{fig:dem47}Filtered Deming regression"}
+conc47 <- comp %>%  ## comp is created in the comparison file
+     filter(AD >= 70 & AD <= 140)  ## data close to the threshold
+
+conc47.deming <- mcreg(x = conc47$AD, y =conc47$GSP, error.ratio = 1, alpha = 0.05,
+                     mref.name = "AD", mtest.name = "GSP", sample.names = NULL,
+                     method.reg = "Deming", method.ci = "bootstrap",
+                     method.bootstrap.ci = "BCa",
+                     nsamples = 999, rng.seed = NULL, rng.kind = "Mersenne-Twister", iter.max = 30,
+                     threshold = 1e-06, na.rm = TRUE, NBins = 1e+06)
+
+plot(conc47.deming, x.lab = "AD", y.lab = "GSP", main=paste(params$analyte, "Conc4 and Conc7 Thresholds Comparison"))
+```
+
+```{r}    
+pander::pander(conc47.deming@para, caption = "\\label{tab:conc47}Regression Parameters")
+```
+
+```{r,fig.cap="\\label{fig:diff47}Difference Plot"}
+plotDifference(conc47.deming, main= paste(params$analyte, "Threshold Comparision"))
+```
+
+```{r}
+conc47intercept <- conc47.deming@para[1,1] # intercept
+conc47slope <- conc47.deming@para[2,1] # slope
+``` 
+  
+* The regression parameters (table \ref{tab:conc47}) were used to
+  determine the effect of the GSP method on the Conc3 and Conc6 thresholds.
+
+* A `r params$analyte` result of `r reg(conc47slope, conc4,
+  conc47intercept)` `r info$units` on the GSP platform is
+  equivalent to "conc4" threshold (`r conc4` `r info$units`) with the
+  AutoDelfia.
+  
+* A `r params$analyte` result of `r reg(conc47slope, conc7,
+  conc47intercept)` `r info$units` on the GSP platform is
+  equivalent to "conc7" threshold (`r conc7` `r info$units`) with the
+  AutoDelfia.
+
+* A `r params$analyte` result of `r reg(conc47slope, alert1,
+  conc47intercept)` `r info$units` on the GSP platform is
+  equivalent to "alert1" threshold (`r alert1` `r info$units`) with the
+  AutoDelfia.
+
+\FloatBarrier
+
+## Transfer of "conc5", "conc8", "alert2" and "alert3"
+
+* "conc5" GA $\le$ 33.0 = 200
+* "conc8" GW < 1000 = 160
+* "alert2" BW 1000-2499 = 200
+* "alert3" BW <1000 = 300
+
+* The comparison data set was filtered to remove values <120 nmol/L
+
+```{r, fig.cap="\\label{fig:dem58}Filtered Deming regression"}
+conc58 <- comp %>%  ## comp is created in the comparison file
+     filter(AD >= 120)  ## data close to the threshold
+
+conc58.deming <- mcreg(x = conc58$AD, y =conc58$GSP, error.ratio = 1, alpha = 0.05,
+                     mref.name = "AD", mtest.name = "GSP", sample.names = NULL,
+                     method.reg = "Deming", method.ci = "bootstrap",
+                     method.bootstrap.ci = "BCa",
+                     nsamples = 999, rng.seed = NULL, rng.kind = "Mersenne-Twister", iter.max = 30,
+                     threshold = 1e-06, na.rm = TRUE, NBins = 1e+06)
+
+plot(conc58.deming, x.lab = "AD", y.lab = "GSP", main=paste(params$analyte, "Conc5 and Conc8 Thresholds Comparison"))
+```
+
+```{r}    
+pander::pander(conc58.deming@para, caption = "\\label{tab:conc58}Regression Parameters")
+```
+
+```{r,fig.cap="\\label{fig:diff58}Difference Plot"}
+plotDifference(conc58.deming, main= paste(params$analyte, "Threshold Comparision"))
+```
+
+```{r}
+conc58intercept <- conc58.deming@para[1,1] # intercept
+conc58slope <- conc58.deming@para[2,1] # slope
+``` 
+  
+* The regression parameters (table \ref{tab:conc58}) were used to
+  determine the effect of the GSP method on the Conc5 and Conc8 thresholds.
+
+* A `r params$analyte` result of `r reg(conc58slope, conc5,
+  conc58intercept)` `r info$units` on the GSP platform is
+  equivalent to "conc5" threshold (`r conc5` `r info$units`) with the
+  AutoDelfia.
+  
+* A `r params$analyte` result of `r reg(conc58slope, conc8,
+  conc58intercept)` `r info$units` on the GSP platform is
+  equivalent to "conc8" threshold (`r conc8` `r info$units`) with the
+  AutoDelfia.
+
+* A `r params$analyte` result of `r reg(conc58slope, alert2,
+  conc58intercept)` `r info$units` on the GSP platform is
+  equivalent to "alert2" threshold (`r alert2` `r info$units`) with the
+  AutoDelfia.
+  
+  * A `r params$analyte` result of `r reg(conc58slope, alert3,
+  conc58intercept)` `r info$units` on the GSP platform is equivalent
+  to "alert3" threshold (`r alert2` `r info$units`) with the
+  AutoDelfia. The vendor reported upper limit of the AMR for this
+  assay is 300 nmol/L, despite a lack of AutoDelfia data flanking 300 nmol/L
+  it is clear that the GSP has a slight negative bias in this
+  concentration range.
+
+## Screening Threshold Validation
+
+```{r}
+
+
+
+\FloatBarrier
+
+

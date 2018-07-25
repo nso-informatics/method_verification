@@ -1,6 +1,6 @@
 # Interference # 
 
-## EDTA study ##
+## Methods ##
 
 * We are using disodium EDTA dihydrate
     * FW = 372.24 g/mol
@@ -28,6 +28,21 @@
 
 * Add 75 ul of each concentration to the filter paper cards:
 
-  
+## EDTA Interference ##
+
+```{r, fig.cap="\\label{fig:edta} EDTA Interferogram"}
+edta <- read_xls(params$file, sheet = sheets$edta)
+# edta %<>% na.omit()
+
+ggplot(edta, aes(x = edta, y= measured, color = factor(cal))) +
+    geom_point() +
+    stat_summary(fun.y=mean, geom="line") +
+    stat_summary(fun.data = mean_se, geom = "errorbar") +
+    ylab("Measured Concentration")+
+    xlab("EDTA (mM)")
+
+``` 
+
+
 \FloatBarrier
 

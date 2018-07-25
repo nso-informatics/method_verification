@@ -12,6 +12,26 @@ gsp %>%
 ```
 
 
+```{r, fig.cap="\\label{fig:dens_inst}Density plot for the method comparison by instrument"}
+gsp %>%
+      gather(method, result, GSP344:GSP349) %>%
+      ggplot(aes(result, fill = method)) +
+      geom_density(alpha = 0.5) +
+      facet_grid(method ~.) +
+      xlab(paste(params$analyte, info$units)) +
+      scale_fill_discrete(name = "Method")
+``` 
 
 
+```{r}
+
+gsp2 <- gsp %>%
+    gather(method, result, GSP344:GSP349)
+
+gsp2$method = as.factor(gsp2$method)
+
+pander::pander(kruskal.test(result ~ method, data= gsp2), caption = "\\label{tab:kw}Kruskal-Wallis rank sum test for Instruments")
+
+
+```
 

@@ -1,5 +1,5 @@
 library("rmarkdown")
-library("shiny")
+##library("shiny")
 
 Rmd_template <- "method_verification_report.Rmd"
 pdf_output <- "method_verification_report.pdf"

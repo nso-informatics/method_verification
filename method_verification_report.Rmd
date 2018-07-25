@@ -4,7 +4,7 @@ author: Sven Eberhard, Amy Chambers and Matthew Henderson
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output: 
     pdf_document:
-        keep_tex: true
+        keep_tex: false
         includes:
             in_header: ../resources/header.tex
         fig_caption: yes
@@ -26,8 +26,8 @@ params:
 \begin{center}
 \includegraphics[width = 60mm]{../resources/NSO_logo.pdf}
 \end{center}
-
 \tableofcontents 
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message=TRUE, warning=FALSE, fig.height=4, fig.width=6)
@@ -42,6 +42,7 @@ library("mcr")
 library("readxl")
 library("pander")
 library("qcc")
+options(warn=-1) # 0 to turn on again
 
 ## Used for testing
 ## params <- list(analyte = "N17P", file = "../data/N17P_GSP_validation.xls")
@@ -49,21 +50,21 @@ library("qcc")
 ## params <- list(analyte = "TSH", file = "../data/TSH_GSP_validation.xls")
                  
 ## set analyte_info dependant on analyte
- info <- switch(params$analyte,
-                "TSH" = list(units = "mIU/L", threshold_doc = "TSH_threshold.Rmd",
-                             lower = 1.31, upper = 250),
-                "N17P" = list(units = "nmol/L", threshold_doc = "N17P_threshold.Rmd",
-                              lower = 0, upper = 299.2),
-                "IRT" = list(units = "ng/ml", threshold_doc = "IRT_threshold.Rmd",
-                             lower = 9, upper = 500))
+info <- switch(params$analyte,
+               "TSH" = list(units = "mIU/L", threshold_doc = "TSH_threshold.Rmd",
+                            lower = 1.31, upper = 250),
+               "N17P" = list(units = "nmol/L", threshold_doc = "N17P_threshold.Rmd",
+                             lower = 0, upper = 299.2),
+               "IRT" = list(units = "ng/ml", threshold_doc = "IRT_threshold.Rmd",
+                            lower = 9, upper = 500))
 
 ## excel workbook sheets
-sheets <- list(comp = 1, precision = 2, prelim = 3, linearity = 8, lob = 5, inter = 9)
+sheets <- list(comp = 1, precision = 2, prelim = 3, linearity = 8, lob = 5, edta = 7, inter = 9, parallel = 10)
 
 ## getwd()
 ## N17OHP ng/mL -> nmol/L conversion factor 1.36
 ## N17OHP 1.4ng/mL to 220ng/mL
-## N17OHP 1.904 nmol/L to 299.2 nmol/L
+## N17OHP 1.904 nmol/L to 299.2 nmolL/
 ## NTSH 1.31uU/mL to 250uU/mL
 ## IRT 9ng/ml to 500ng/mL
 ```
@@ -77,25 +78,29 @@ sheets <- list(comp = 1, precision = 2, prelim = 3, linearity = 8, lob = 5, inte
 
 ## Sample stability
 
-## Analytical Measurement Range
-
-Analytical measurement range (AMR) is determined by the manufacturer for each kit lot. The AMR for the kit lot used in this validation is 
-
-
-```{r child = 'precsion.Rmd'}
+```{r child = 'precision.Rmd'}
 ```
 \newpage
+
 ```{r child = 'amr.Rmd'}
 ```
 \newpage
+
 ```{r child = 'comparison.Rmd'}
 ```
 \newpage
+
+```{r child = 'parallel_comp.Rmd'}
+```
+\newpage
+
 ```{r child = info$threshold_doc}
 ```
 \newpage
+
 ```{r child = 'inter.Rmd'}
 ```
 \newpage
+
 ```{r child = 'interference.Rmd'}
 ```

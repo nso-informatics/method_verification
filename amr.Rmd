@@ -21,6 +21,16 @@ linearity %>%
 ``` 
 
 
+```{r}
+model1 <- lm(result ~ target, data = linearity)
+model2 <- lm(result ~ poly(target,2), data = linearity)
+model3 <- lm(result ~ poly(target,3), data = linearity)
+
+pander::pander(anova(model1,model2,model3), caption = "\\label{tab:anova}Anova analysis of Linear, Quadratic and Cubic Models")
+
+```
+
+
 ## Limit of Quantitation ##
 ```{r}
 

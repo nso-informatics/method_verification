@@ -3,12 +3,12 @@
 ## Data Summary ##
 
 ```{r}
-comp <- read_xls(params$file, sheet = params$comp)
+comp <- read_xls(params$file, sheet = sheets$comp)
 comp$GSP <- gsub(pattern="<|>",replacement="", x=comp$GSP, perl = TRUE) ## remove <,>
 comp$GSP <- as.numeric(comp$GSP)
 comp %<>%
 ##    na.omit() %>%
-    filter(GSP >= info$lower & GSP <= info$upper)
+    filter(GSP >= info$lower & GSP <= info$upper & design == "p")
 
 pander::pander(summary(comp[, c("AD", "GSP")]), caption = "\\label{tb:comp}Summary of Method Comparison Values")
 ```
@@ -35,6 +35,7 @@ comp %>%
       scale_fill_discrete(name = "Method")
 
 ``` 
+\FloatBarrier
 
 ### Paired T-test ###
 
@@ -42,8 +43,6 @@ comp %>%
 pander::pander(t.test(comp$AD, comp$GSP, paired = TRUE),
                    caption = "\\label{tab:paired}Paired T-test")
 ```
-
-\clearpage
 
 ### Regression Analysis ###
 
@@ -57,7 +56,6 @@ comp.deming <- mcreg(x = comp$AD, y =comp$GSP, error.ratio = 1, alpha = 0.05,
 
 plot(comp.deming, x.lab = "AD", y.lab = "GSP", main=paste("Pooled", params$analyte,"Method Comparision"))
 ```
-
 
 ```{r, fig.cap="\\label{fig:dem_inst}Deming regression by instrument"}
 for (inst in c(344, 348, 349)){
@@ -76,3 +74,4 @@ for (inst in c(344, 348, 349)){
 ```
 
 \FloatBarrier
+
