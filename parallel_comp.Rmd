@@ -1,0 +1,50 @@
+## Parallel Sample Analysis
+
+* To ensure that no sample degradation occurred in the above method comparison study. The following samples were analysed in parallel on the AutoDelfia and GSP.
+
+```{r}
+parallel <- read_xls(params$file, sheet = sheets$parallel)
+parallel$GSP <- gsub(pattern="<|>",replacement="", x=parallel$GSP, perl = TRUE) ## remove <,>
+parallel$GSP <- as.numeric(parallel$GSP)
+parallel %<>%
+    na.omit() %>%
+    filter(GSP >= info$lower & GSP <= info$upper)
+
+pander::pander(summary(parallel[, c("AD", "GSP")]), caption = "\\label{tb:parallel}Summary of Parallel Method Comparison Values")
+```
+
+```{r, fig.cap="\\label{fig:pdens}Density plot for the parallel method comparison"}
+parallel %>%
+    gather(method, result, AD:GSP) %>%
+    ggplot(aes(result, fill = method)) +
+    geom_density(alpha = 0.5) +
+    xlab(paste(params$analyte, info$units)) +
+    scale_fill_discrete(name = "Method")
+```
+
+```{r, fig.cap="\\label{fig:pdens_inst}Density plot for the parallel method comparison by instrument"}
+parallel %>%
+      gather(method, result, AD:GSP) %>%
+      ggplot(aes(result, fill = method)) +
+      geom_density(alpha = 0.5) +
+      facet_grid(instrument ~ .) +
+      xlab(paste(params$analyte, info$units)) +
+      scale_fill_discrete(name = "Method")
+``` 
+
+```{r, fig.cap="\\label{fig:dem}Parallel Deming regression"}
+parallel.deming <- mcreg(x = parallel$AD, y =parallel$GSP, error.ratio = 1, alpha = 0.05,
+                     mref.name = "AD", mtest.name = "GSP", sample.names = NULL,
+                     method.reg = "Deming", method.ci = "bootstrap",
+                     method.bootstrap.ci = "BCa",
+                     nsamples = 999, rng.seed = NULL, rng.kind = "Mersenne-Twister", iter.max = 30,
+                     threshold = 1e-06, na.rm = TRUE, NBins = 1e+06)
+
+plot(parallel.deming, x.lab = "AD", y.lab = "GSP", main=paste("Pooled", params$analyte,"Parallel Method Comparison"))
+```
+
+```{r,fig.cap="\\label{fig:diff}Parallel Difference Plot"}
+plotDifference(parallel.deming, main= paste(params$analyte, "Parallel Comparison"))
+```
+
+\FloatBarrier

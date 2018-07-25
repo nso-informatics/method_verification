@@ -1,0 +1,112 @@
+# Precision Study #
+
+## Preliminary Precision ##
+
+```{r}
+prelim <- read_xls(params$file, sheet = sheets$prelim)
+
+##### Functions for preliminary precision
+### 20 repeats of QC material on the same day
+
+prelim %>%
+    gather(level, result, level1:level3) %>%
+    group_by(instrument,level) %>%
+    summarize(n = n(),
+              mean = mean(result),
+              sd = sd(result),
+              cv = sd/mean *100) %>%
+    pander::pander(caption = "\\label{tab:prelim}Preliminary Precision")
+```
+
+## Within and Between Run Precision ##
+
+Five runs with three repetitions each were done to provide within-run
+and between-run precision data. Analysis follows the calculations and
+examples described in cite:Krouwer1984.  The data collection was
+carried out at three levels, the results are presented in tables
+
+Total imprecision was determined by pooling the variances of the
+within and between day runs. Repeatability (aka: within-run precision)
+was determined from within run replicates according to CLSI
+guidelines. Total imprecision was compared against the manufacturer
+claim.
+
+
+```{r, fig.cap="\\label{fig:QC_den}Distribution of QC Results by Instrument"}
+precision <- read_xls(params$file, sheet = sheets$precision)
+precision %<>% na.omit()
+
+
+# QC distribution
+precision %>%
+    gather(rep, result, rep1:rep3) %>%
+    ggplot(aes(result, fill = factor(level))) +
+    geom_density(alpha = 0.5) +
+    facet_grid(instrument~.) +
+    xlab(paste(params$analyte, info$units)) +
+    scale_fill_discrete("Level")
+
+``` 
+
+
+```{r, fig.cap="\\label{fig:LJ} Levey-Jennings Charts"}
+# Pseudo LJ charts
+precision %>%
+    gather(rep, result, rep1:rep3) %>%
+    ggplot(aes(x = run, y = result, colour= factor(instrument))) +
+    geom_point() +
+    stat_summary(fun.y=mean, geom="line") +
+    stat_summary(fun.data = mean_se, geom = "errorbar") +
+    facet_grid(level~., scales = "free_y") +
+    xlab("Run") +
+    ylab(info$units) + 
+    scale_colour_discrete("Instrument")
+``` 
+
+```{r}
+## Within-run imprecision
+within <- precision %>%
+    gather(rep, result, rep1:rep3) %>%
+    group_by(instrument, level, run) %>%
+    summarize(n = n(),
+              mean = mean(result),
+              var = var(result)) %>%
+    group_by(instrument, level) %>%
+    summarize(n = sum(n),
+              mean = mean(mean),
+              var_within = mean(var))
+              
+## Between-run imprecision
+between <- precision %>%
+    gather(rep, result, rep1:rep3) %>%
+    group_by(instrument, level, run) %>%
+    summarize(n = n(),
+              mean = mean(result)) %>%
+    group_by(instrument, level) %>%
+    summarize(n = sum(n),
+              var_btwn = var(mean))
+              
+## Total imprecision
+within$var_btwn <- between$var_btwn
+
+within %>%
+    group_by(instrument, level) %>%
+    summarize(mean = mean,
+              sd_within = sqrt(var_within),
+              sd_btwn = sqrt(var_btwn),
+              sd_total = sqrt(var_within + var_btwn),
+              cv_total = sd_total/mean * 100) %>%
+    pander::pander(caption = "\\label{tab:pre}Within and Between Run Precision by Instrument")
+
+within %>%
+    group_by(level) %>%
+    summarize(mean= mean(mean),
+              sd_within = (sqrt(mean(var_within))),
+              sd_btwn = sqrt(mean(var_btwn)),
+              sd_total = sqrt(mean(var_within + var_btwn)),
+              cv_total = sd_total/mean * 100) %>%
+    pander::pander(caption = "\\label{tab:ppre}Pooled Within and Between Run Precision")
+
+```
+
+\clearpage
