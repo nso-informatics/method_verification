@@ -240,12 +240,6 @@ conc58slope <- conc58.deming@para[2,1] # slope
   it is clear that the GSP has a slight negative bias in this
   concentration range.
 
-## Screening Threshold Validation
-
-```{r}
-
-
-
 \FloatBarrier
 
 
