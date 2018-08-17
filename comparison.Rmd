@@ -20,8 +20,6 @@ pander::pander(summary(comp[, c("AD", "GSP")]), caption = "\\label{tb:comp}Summa
       geom_density(alpha = 0.5) +
       xlab(paste(params$analyte, info$units)) +
       scale_fill_discrete(name = "Method")
-   
-  # labs(title = "Density plot for the TSH reagent lot comparison")
 ```
 
 
@@ -33,7 +31,7 @@ comp %>%
       facet_grid(instrument ~.) +
       xlab(paste(params$analyte, info$units)) +
       scale_fill_discrete(name = "Method")
-
+ggsave("density.pdf")
 ``` 
 \FloatBarrier
 

@@ -1,0 +1,19 @@
+# Background
+
+The GSP Neonatal IRT assay is a solid phase, two-site
+fluoroimmunometric assay based on the direct sandwich technique in
+which two monoclonal antibodies are directed against two separate
+antigenic determinants on the IRT molecule.  Patient specimens,
+Calibrators and Controls are reacted simultaneously with immobilized
+monoclonal antibodies directed against a specific antigenic site on
+the IRT molecule and europium-labeled monoclonal antibodies (directed
+against a different antigenic site) in the assay buffer.  The assay
+buffer elutes the IRT from each sample. Only one incubation is
+required for the assay. 
+
+DELFIA Inducer then dissociates europium ions from the labeled
+antibody into solution, where they form highly fluorescent chelates
+with components of the Inducer Solution.  The fluorescence in each
+well is then measured.  The fluorescence of each sample is
+proportional to the concentration of IRT in the sample.
+

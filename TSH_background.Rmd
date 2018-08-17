@@ -1,0 +1,20 @@
+# Background
+
+The GSP Neonatal hTSH assay is a solid phase, two-site
+fluoroimmunometric assay based on the direct sandwich technique in
+which two monoclonal antibodies (derived from mice) are directed
+against two separate antigenic determinants on the hTSH
+molecule. Calibrators controls and patient specimens containing hTSH
+are reacted simultaneously with immobilized monoclonal antibodies
+directed against a specific antigenic site on the B hTSH subunit and
+europium-labeled monoclonal antibodies (directed against a different
+antigenic site located partly on the B subunit and partly on the A
+subunit) in assay buffer. The assay buffer elutes hTSH from the dried
+blood spots on the filter paper disks. The complete assay requires
+only one incubation step.
+
+DELFIA Inducer dissociates europium ions from the labeled antibody
+into solution where they form highly fluorescent chelates with
+components of DELFIA Inducer. The fluorescence in each well is then
+measured. The fluorescence of each sample is proportional to the
+concentration of hTSH in the sample.

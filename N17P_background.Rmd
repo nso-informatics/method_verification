@@ -1,0 +1,17 @@
+# Background
+
+The GSP neonatal-OH-progesterone (17-OHP) assay is a solid phase,
+time-resolved fluoroimmunoassay based on the competitive reaction
+between europium-labeled 17-OHP and sample 17 OHP for a limited amount
+of binding sites on 17-OHP specific polyclonal antibodies. Danazol
+facilitates the release of 17-OHP from the binding proteins. A second
+antibody, directed against rabbit IgG, is coated to the solid phase,
+giving convenient separation of the antibody-bound and free antigen.
+
+DELFIA inducer dissociates europium ions from the labeled antigen into
+solution where they form highly fluorescent chelates with components
+of DELFIA Inducer. The fluorescence in each well is then measured. The
+fluorescence of each sample is inversely proportional to the
+concentration of 17-OHP in the sample.
+
+

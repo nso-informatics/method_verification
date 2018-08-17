@@ -21,6 +21,11 @@ params:
         label: "Input dataset:"
         value: ./data/N17P_GSP_validation.xls
         input: text
+    recommendation: 
+        label: "Recommendation:"
+        value: ""
+        input: select
+        choices: [accepted, not accepted]
 ---
 
 \begin{center}
@@ -52,10 +57,13 @@ options(warn=-1) # 0 to turn on again
 ## set analyte_info dependant on analyte
 info <- switch(params$analyte,
                "TSH" = list(units = "mIU/L", threshold_doc = "TSH_threshold.Rmd",
+                            background_doc = "TSH_background.Rmd",
                             lower = 1.31, upper = 250),
                "N17P" = list(units = "nmol/L", threshold_doc = "N17P_threshold.Rmd",
+                             background_doc = "N17P_background.Rmd",
                              lower = 0, upper = 299.2),
                "IRT" = list(units = "ng/ml", threshold_doc = "IRT_threshold.Rmd",
+                            background_doc = "IRT_background.Rmd",
                             lower = 9, upper = 500))
 
 ## excel workbook sheets
@@ -68,15 +76,9 @@ sheets <- list(comp = 1, precision = 2, prelim = 3, linearity = 8, lob = 5, edta
 ## NTSH 1.31uU/mL to 250uU/mL
 ## IRT 9ng/ml to 500ng/mL
 ```
-# Background
 
-# Methods
-
-# Recommendations
-
-## Sample type
-
-## Sample stability
+```{r child = info$background_doc}
+```
 
 ```{r child = 'precision.Rmd'}
 ```
@@ -104,3 +106,17 @@ sheets <- list(comp = 1, precision = 2, prelim = 3, linearity = 8, lob = 5, edta
 
 ```{r child = 'interference.Rmd'}
 ```
+
+# Recommendation
+
+The GSP `r params$analyte` immunoassay method is `r params$recommendation` for use at NSO.
+
+
+
+```{r, out.width = "200px"}
+knitr::include_graphics("../resources/signature.png")
+```
+
+Matthew P.A. Henderson PhD, FCACB \
+Laboratory Head of Biochemistry \
+Newborn Screening Ontario \

@@ -61,7 +61,8 @@ plotDifference(conservative.deming, main= paste(params$analyte, "Threshold Compa
 conservativeintercept <- conservative.deming@para[1,1] # intercept
 conservativeslope <- conservative.deming@para[2,1] # slope
 ``` 
-  
+\FloatBarrier
+
 * The regression parameters (table \ref{tab:conservative}) were used to
   determine the effect of the GSP method on the conservative threshold.
 
@@ -70,7 +71,7 @@ conservativeslope <- conservative.deming@para[2,1] # slope
   equivalent to the conservative threshold (`r conc1` `r info$units`) with the
   AutoDelfia.
 
-\FloatBarrier
+
   
 ## Transfer of "conc3" and "conc6" thresholds
 
@@ -100,6 +101,7 @@ pander::pander(conc36.deming@para, caption = "\\label{tab:conc36}Regression Para
 ```{r,fig.cap="\\label{fig:diff36}Difference Plot"}
 plotDifference(conc36.deming, main= paste(params$analyte, "Threshold Comparision"))
 ```
+\FloatBarrier
 
 ```{r}
 conc36intercept <- conc36.deming@para[1,1] # intercept
@@ -120,9 +122,6 @@ conc36slope <- conc36.deming@para[2,1] # slope
   equivalent to "conc6" threshold (`r conc6` `r info$units`) with the
   AutoDelfia.
   
-  
-\FloatBarrier
-
 ## Transfer of "conc4" and "conc7" and "alert1"
 
 * "conc4" GA 33.1-35.0 = 105
@@ -152,6 +151,9 @@ pander::pander(conc47.deming@para, caption = "\\label{tab:conc47}Regression Para
 ```{r,fig.cap="\\label{fig:diff47}Difference Plot"}
 plotDifference(conc47.deming, main= paste(params$analyte, "Threshold Comparision"))
 ```
+  
+\FloatBarrier
+
 
 ```{r}
 conc47intercept <- conc47.deming@para[1,1] # intercept
@@ -176,7 +178,6 @@ conc47slope <- conc47.deming@para[2,1] # slope
   equivalent to "alert1" threshold (`r alert1` `r info$units`) with the
   AutoDelfia.
 
-\FloatBarrier
 
 ## Transfer of "conc5", "conc8", "alert2" and "alert3"
 
@@ -208,6 +209,7 @@ pander::pander(conc58.deming@para, caption = "\\label{tab:conc58}Regression Para
 ```{r,fig.cap="\\label{fig:diff58}Difference Plot"}
 plotDifference(conc58.deming, main= paste(params$analyte, "Threshold Comparision"))
 ```
+\FloatBarrier
 
 ```{r}
 conc58intercept <- conc58.deming@para[1,1] # intercept
@@ -240,6 +242,5 @@ conc58slope <- conc58.deming@para[2,1] # slope
   it is clear that the GSP has a slight negative bias in this
   concentration range.
 
-\FloatBarrier
 
 
